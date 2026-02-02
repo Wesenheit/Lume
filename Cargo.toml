@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "lume-core",
+  "lume-tui"
+]
+resolver = "2"
