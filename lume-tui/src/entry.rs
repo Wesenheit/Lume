@@ -12,7 +12,12 @@ pub enum Commands {
     Random {
         #[arg(short, long)]
         size: usize,
+        #[arg(short, long,default_value = "100")]
+        ms: u64
     },
-    Cpu, 
+    Cpu{
+        #[arg(short, long,default_value = "100")]
+        ms: u64
+    }
 }
 

@@ -10,7 +10,7 @@ use crossterm::{
 };
 use std::io::{self, stdout};
 
-pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable) -> io::Result<()> {
+pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64) -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
@@ -19,7 +19,7 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable) -> io::Result<
     loop {
         terminal.draw(|frame| ui(frame, &matrix))?;
 
-        if event::poll(std::time::Duration::from_millis(100))? {
+        if event::poll(std::time::Duration::from_millis(ms))? {
             if let Event::Key(key) = event::read()? {
                 if key.code == KeyCode::Char('q') { break; }
             }
@@ -78,7 +78,7 @@ pub fn ui(frame: &mut Frame, matrix: &Matrix) {
         .direction(Direction::Horizontal)
         .constraints([
             Constraint::Fill(1),
-            Constraint::Length(matrix_width),
+            Constraint::Length(matrix_width+5),
             Constraint::Fill(1),
         ])
         .split(center_area)[1];
