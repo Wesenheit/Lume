@@ -7,3 +7,4 @@ edition = "2024"
 lume-core = {path = "../lume-core"}
 ratatui = "0.26"
 crossterm = "0.27"
+clap = { version = "4.0", features = ["derive"] }
