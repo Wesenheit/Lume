@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 rand = "0.8"
+sysinfo = { version = "0.33", default-features = false, features = ["system"] }

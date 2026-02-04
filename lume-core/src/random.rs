@@ -8,7 +8,7 @@ fn cmp5_org(x: u16) -> u16 {
 }
 
 impl Renderable for CM5 {
-    fn render(&self, matrix: &mut crate::core::Matrix) {
+    fn render(&mut self, matrix: &mut crate::core::Matrix) {
         for (i,row) in matrix.rows.iter_mut().enumerate(){
             let new = cmp5_org(*row);
             if (i & 4) != 0 {

@@ -10,7 +10,7 @@ use crossterm::{
 };
 use std::io::{self, stdout};
 
-pub fn draw_cli(matrix: &mut Matrix,pattern: impl Renderable) -> io::Result<()> {
+pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable) -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
@@ -19,7 +19,7 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: impl Renderable) -> io::Result<()> 
     loop {
         terminal.draw(|frame| ui(frame, &matrix))?;
 
-        if event::poll(std::time::Duration::from_millis(50))? {
+        if event::poll(std::time::Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
                 if key.code == KeyCode::Char('q') { break; }
             }
@@ -55,9 +55,7 @@ pub fn format_matrix_leds(matrix: &Matrix) -> Vec<Line<'_>> {
     out
 }
 pub fn ui(frame: &mut Frame, matrix: &Matrix) {
-    let matrix_height = matrix.rows.len() as u16;
     let area = frame.size();
-    
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -69,11 +67,18 @@ pub fn ui(frame: &mut Frame, matrix: &Matrix) {
 
     let center_area = chunks[1];
 
+    let lines = format_matrix_leds(matrix);
+    let matrix_width = if let Some(first_line) = lines.get(0) {
+        (first_line.width() as u16 ).min(area.width)
+    } else {
+        2
+    };
+
     let final_area = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([
             Constraint::Fill(1),
-            Constraint::Length(matrix_height), // 16 bits + spaces/dots + borders
+            Constraint::Length(matrix_width),
             Constraint::Fill(1),
         ])
         .split(center_area)[1];

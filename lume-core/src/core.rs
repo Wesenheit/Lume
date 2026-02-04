@@ -6,7 +6,7 @@ pub struct Matrix {
 }
 
 pub trait Renderable {
-    fn render(&self, matrix: &mut Matrix);
+    fn render(&mut self, matrix: &mut Matrix);
 }
 
 impl Matrix {
@@ -23,7 +23,7 @@ impl Matrix {
         Self{rows:rows}
     }
 
-    pub fn update<T: Renderable>(&mut self, pattern: &T) {
+    pub fn update<T: Renderable>(&mut self, pattern: &mut T) {
         pattern.render(self);
     }
 }

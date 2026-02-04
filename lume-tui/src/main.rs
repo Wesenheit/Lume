@@ -6,16 +6,24 @@ use std::io;
 use clap::Parser;
 use entry::{Cli,Commands};
 use lume_core::random::CM5;
-use lume_core::core::Matrix;
+use lume_core::cpu::Cpu;
+use lume_core::core::{Matrix,Renderable};
 use utils::draw_cli;
 
 fn main() -> io::Result<()> {
     let cli = Cli::parse();
-    match &cli.command {
+    let (mut matrix,mut pattern):(Matrix,Box<dyn Renderable>) = match &cli.command {
         Commands::Random { size } => {
-            let pattern = CM5;
-            let mut matrix = Matrix::random(*size);
-            return draw_cli(&mut matrix,pattern);
+            let pattern = Box::new(CM5);
+            let matrix = Matrix::random(*size);
+            (matrix,pattern)
         }
-    }
+        Commands::Cpu => {
+            let pattern = Box::new(Cpu::new());
+            let size = pattern.count();
+            let matrix = Matrix::zero(size);
+            (matrix,pattern)
+        }
+    };
+    draw_cli(&mut matrix,pattern.as_mut())
 }

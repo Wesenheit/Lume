@@ -13,5 +13,6 @@ pub enum Commands {
         #[arg(short, long)]
         size: usize,
     },
+    Cpu, 
 }
 
