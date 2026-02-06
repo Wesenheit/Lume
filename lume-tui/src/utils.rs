@@ -2,6 +2,26 @@
 use lume_core::core::{Matrix, Renderable};
 use ratatui::{prelude::*, widgets::*};
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Pallete {
+    Light,
+    Dark,
+}
+
+impl Pallete {
+    pub fn on(&self) -> Color{
+        match self {
+            Pallete::Dark => Color::Red,
+            Pallete::Light => Color::Green
+        }
+    }
+    pub fn off(&self) -> Color{
+        match self {
+            Pallete::Dark => Color::Indexed(235),
+            Pallete::Light => Color::Reset,
+        }
+    }
+}
 
 use crossterm::{
     event::{self, Event, KeyCode},
@@ -10,14 +30,14 @@ use crossterm::{
 };
 use std::io::{self, stdout};
 
-pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64) -> io::Result<()> {
+pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64,theme: Pallete) -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
 
 
     loop {
-        terminal.draw(|frame| ui(frame, &matrix))?;
+        terminal.draw(|frame| ui(frame, &matrix,theme))?;
 
         if event::poll(std::time::Duration::from_millis(ms))? {
             if let Event::Key(key) = event::read()? {
@@ -34,7 +54,7 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64) -> io::
 }
 
 
-pub fn format_matrix_leds(matrix: &Matrix) -> Vec<Line<'_>> {
+pub fn format_matrix_leds(matrix: &Matrix,theme: Pallete) -> Vec<Line<'_>> {
 
     let mut out:Vec<Line> = Vec::new();
     for bit_pos in (0..16).rev() {
@@ -43,18 +63,18 @@ pub fn format_matrix_leds(matrix: &Matrix) -> Vec<Line<'_>> {
             let is_on = (row_val >> bit_pos) & 1 == 1;
 
             let (symbol, color) = if is_on {
-                (" ⬤ ", Color::Red)
+                (" ⬤ ", theme.on())
             } else {
-                (" ⬤ ", Color::Indexed(235))
+                (" ⬤ ", theme.off())
             };
 
-            spans.push(Span::styled(symbol, Style::default().fg(color)));
+            spans.push(Span::styled(symbol, Style::default().fg(color).bg(Color::Reset)));
         }
         out.push(Line::from(spans));
     }
     out
 }
-pub fn ui(frame: &mut Frame, matrix: &Matrix) {
+pub fn ui(frame: &mut Frame, matrix: &Matrix,theme: Pallete) {
     let area = frame.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -67,7 +87,7 @@ pub fn ui(frame: &mut Frame, matrix: &Matrix) {
 
     let center_area = chunks[1];
 
-    let lines = format_matrix_leds(matrix);
+    let lines = format_matrix_leds(matrix,theme);
     let matrix_width = if let Some(first_line) = lines.get(0) {
         (first_line.width() as u16 ).min(area.width)
     } else {
@@ -84,7 +104,7 @@ pub fn ui(frame: &mut Frame, matrix: &Matrix) {
         .split(center_area)[1];
 
 
-    let paragraph = Paragraph::new(format_matrix_leds(matrix))
+    let paragraph = Paragraph::new(format_matrix_leds(matrix,theme))
         .block(Block::default().title(" LED Matrix TUI ").borders(Borders::ALL))
         .alignment(Alignment::Center);
 
