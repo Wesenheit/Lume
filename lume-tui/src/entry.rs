@@ -22,5 +22,8 @@ pub enum Commands {
     Cpu {
         #[arg(short, long)]
         simple: bool,
+
+        #[arg(short, long,default_value = "1")]
+        reduce: usize,
     }
 }
