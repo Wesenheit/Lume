@@ -54,21 +54,24 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64,theme: P
 }
 
 
+
 pub fn format_matrix_leds(matrix: &Matrix,theme: Pallete) -> Vec<Line<'_>> {
 
     let mut out:Vec<Line> = Vec::new();
     for bit_pos in (0..16).rev() {
         let mut spans = Vec::new();
+        spans.push(Span::styled(" ",Style::default()));
         for row_val in &matrix.rows {
             let is_on = (row_val >> bit_pos) & 1 == 1;
 
             let (symbol, color) = if is_on {
-                (" ⬤ ", theme.on())
+                ("⬤ ", theme.on())
             } else {
-                (" ⬤ ", theme.off())
+                ("⬤ ", theme.off())
             };
 
             spans.push(Span::styled(symbol, Style::default().fg(color).bg(Color::Reset)));
+            spans.push(Span::styled(" ",Style::default()));
         }
         out.push(Line::from(spans));
     }
@@ -98,7 +101,7 @@ pub fn ui(frame: &mut Frame, matrix: &Matrix,theme: Pallete) {
         .direction(Direction::Horizontal)
         .constraints([
             Constraint::Fill(1),
-            Constraint::Length(matrix_width+5),
+            Constraint::Length(matrix_width+2),
             Constraint::Fill(1),
         ])
         .split(center_area)[1];
