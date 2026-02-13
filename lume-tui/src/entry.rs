@@ -20,10 +20,13 @@ pub enum Commands {
         size: usize,
     },
     Cpu {
-        #[arg(short, long)]
+        #[arg(long)]
         simple: bool,
 
         #[arg(short, long,default_value = "1")]
         reduce: usize,
+        
+        #[arg(short, long,default_value = "2")]
+        step: usize,
     }
 }

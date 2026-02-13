@@ -18,8 +18,8 @@ fn main() -> io::Result<()> {
             let matrix = Matrix::random(*size);
             (matrix,pattern)
         }
-        Commands::Cpu {simple,reduce}=> {
-            let pattern = Box::new(Cpu::new(*simple,*reduce));
+        Commands::Cpu {simple,reduce,step}=> {
+            let pattern = Box::new(Cpu::new(*simple,*reduce,*step));
             let size = pattern.count();
             let matrix = Matrix::zero(size);
             (matrix,pattern)

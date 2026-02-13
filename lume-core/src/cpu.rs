@@ -11,6 +11,7 @@ pub struct Cpu{
     vis: CpuVisType,
     sys: System,
     reduce: usize,
+    step:usize,
 }
 
 fn usage_to_u16_simple(usage: f32) -> u16 {
@@ -42,7 +43,7 @@ impl Cpu {
                 } else {
                     0
                 };
-                if (i & 4) != 0 {
+                if (i & self.step) != 0 {
                     (row << 1) | new_bit
                 } else {
                     (row >> 1) | (new_bit << 15)
@@ -50,7 +51,7 @@ impl Cpu {
             }
         }
     }
-    pub fn new(simple: bool,reduce:usize) -> Cpu {
+    pub fn new(simple: bool,reduce:usize,step:usize) -> Cpu {
         let sys =System::new_with_specifics(
             RefreshKind::nothing().with_cpu(CpuRefreshKind::everything()),
         );
@@ -59,7 +60,7 @@ impl Cpu {
         } else {
             CpuVisType::Random
         };
-        return Cpu { vis: typecpu, sys:sys ,reduce:reduce }
+        return Cpu { vis: typecpu, sys:sys ,reduce:reduce ,step:step}
     }
     pub fn count(&self) -> usize {
         return (self.sys.cpus().len() + self.reduce - 1) / self.reduce;
