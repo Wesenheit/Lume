@@ -1,4 +1,4 @@
-use crate::core::Renderable;
+use crate::core::{Renderable,Structure};
 
 
 pub struct CM5;
@@ -17,5 +17,8 @@ impl Renderable for CM5 {
                 *row = (*row >> 1) | (new << 15);
             }
         }
+    }
+    fn get_structure(&self)->Structure {
+        Structure::Sliding(4)
     }
 }

@@ -1,14 +1,14 @@
 use rand::Rng;
-use crate::utils::condense_u16_to_u8;
+use crate::utils::{take_lower,take_upper,take_even};
 
 pub struct MatrixConfig{
     pub size:usize,
     pub reduce:bool
 }
 
-pub enum Row{
-    Full(u16),
-    Reduced(u8),
+pub enum Structure {
+    Static,
+    Sliding(usize)
 }
 
 pub struct Matrix {
@@ -19,6 +19,7 @@ pub struct Matrix {
 
 pub trait Renderable {
     fn render(&mut self, matrix: &mut Matrix);
+    fn get_structure(&self)->Structure;
 }
 
 impl Matrix {
@@ -52,8 +53,20 @@ impl Matrix {
     pub fn update(&mut self, pattern: &mut dyn Renderable) {
         pattern.render(self);
         if self.reduce {
-            self.rows_u8.iter_mut().zip(self.rows.iter())
-                .for_each(|(red,full)| {*red = condense_u16_to_u8(*full)});
+            self.rows_u8.iter_mut().zip(self.rows.iter()).enumerate()
+                .for_each(|(i,(red,full))| {
+                    
+                    *red = match pattern.get_structure() {
+                        Structure::Static => take_even(*full),
+                        Structure::Sliding(step) => {
+                            if (i & step) != 0 {
+                                take_lower(*full)
+                            } else {
+                                take_upper(*full)
+                            }
+                        }
+                    }
+                });
         }
     }
 }

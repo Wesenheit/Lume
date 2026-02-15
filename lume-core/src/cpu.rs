@@ -1,7 +1,7 @@
 use sysinfo::{System, RefreshKind, CpuRefreshKind};
 use itertools::Itertools;
 
-use crate::core::{Matrix,Renderable};
+use crate::core::{Matrix,Renderable,Structure};
 enum CpuVisType {
     Simple,
     Random,
@@ -75,6 +75,12 @@ impl Renderable for Cpu {
                 (s + cpu.cpu_usage(), c + 1)
             });
             matrix.rows[i] = self.get_row(matrix.rows[i],i, sum/num as f32)
+        }
+    }
+    fn get_structure(&self)->Structure {
+        match self.vis {
+            CpuVisType::Simple => Structure::Static,
+            CpuVisType::Random => Structure::Sliding(self.step)
         }
     }
 }
