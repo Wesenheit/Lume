@@ -45,7 +45,7 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64,theme: P
             }
         }
 
-        pattern.render(matrix);
+        matrix.update(pattern);
     }
 
     disable_raw_mode()?;
@@ -56,14 +56,18 @@ pub fn draw_cli(matrix: &mut Matrix,pattern: &mut dyn Renderable,ms:u64,theme: P
 
 
 pub fn format_matrix_leds(matrix: &Matrix,theme: Pallete) -> Vec<Line<'_>> {
-
+    let height_of_led = if matrix.reduce {8} else {16};
     let mut out:Vec<Line> = Vec::new();
-    for bit_pos in (0..16).rev() {
+    for bit_pos in (0..height_of_led).rev() {
         let mut spans = Vec::new();
         spans.push(Span::styled(" ",Style::default()));
-        for row_val in &matrix.rows {
-            let is_on = (row_val >> bit_pos) & 1 == 1;
-
+        let size = matrix.rows.len();        
+        for i in 1..size {
+            let is_on:bool = if matrix.reduce {
+                (matrix.rows_u8[i] >> bit_pos) & 1 == 1
+            } else {
+                (matrix.rows[i] >> bit_pos) & 1 == 1
+            };
             let (symbol, color) = if is_on {
                 ("⬤ ", theme.on())
             } else {
@@ -78,12 +82,13 @@ pub fn format_matrix_leds(matrix: &Matrix,theme: Pallete) -> Vec<Line<'_>> {
     out
 }
 pub fn ui(frame: &mut Frame, matrix: &Matrix,theme: Pallete) {
+    let height_of_led = if matrix.reduce {8} else {16};
     let area = frame.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Fill(1),            
-            Constraint::Length(16),
+            Constraint::Length(height_of_led+2),
             Constraint::Fill(1),             
         ])
         .split(area);

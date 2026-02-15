@@ -7,7 +7,7 @@ use clap::Parser;
 use entry::{Cli,Commands};
 use lume_core::random::CM5;
 use lume_core::cpu::Cpu;
-use lume_core::core::{Matrix,Renderable};
+use lume_core::core::{Matrix,MatrixConfig,Renderable};
 use utils::{draw_cli,Pallete};
 
 fn main() -> io::Result<()> {
@@ -15,13 +15,15 @@ fn main() -> io::Result<()> {
     let (mut matrix,mut pattern):(Matrix,Box<dyn Renderable>) = match &cli.command {
         Commands::Random { size } => {
             let pattern = Box::new(CM5);
-            let matrix = Matrix::random(*size);
+            let config = MatrixConfig{size:*size,reduce:cli.reduce_u8};
+            let matrix = Matrix::random(config);
             (matrix,pattern)
         }
         Commands::Cpu {simple,reduce,step}=> {
             let pattern = Box::new(Cpu::new(*simple,*reduce,*step));
             let size = pattern.count();
-            let matrix = Matrix::zero(size);
+            let config = MatrixConfig{size:size,reduce:cli.reduce_u8};
+            let matrix = Matrix::zero(config);
             (matrix,pattern)
         }
     };

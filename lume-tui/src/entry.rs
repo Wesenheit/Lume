@@ -9,6 +9,9 @@ pub struct Cli {
     #[arg(short, long)]
     pub light: bool,
 
+    #[arg(short,long)]
+    pub reduce_u8:bool,
+
     #[command(subcommand)]
     pub command: Commands,
 }
