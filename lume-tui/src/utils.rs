@@ -62,7 +62,7 @@ pub fn format_matrix_leds(matrix: &Matrix,theme: Pallete) -> Vec<Line<'_>> {
         let mut spans = Vec::new();
         spans.push(Span::styled(" ",Style::default()));
         let size = matrix.rows.len();        
-        for i in 1..size {
+        for i in 0..size {
             let is_on:bool = if matrix.reduce {
                 (matrix.rows_u8[i] >> bit_pos) & 1 == 1
             } else {
