@@ -17,6 +17,7 @@ pub struct Matrix {
     pub rows_u8: Vec<u8>,
 }
 
+#[derive(Clone)]
 pub struct Region{
     pub lower:usize,
     pub upper:usize,
@@ -29,13 +30,9 @@ impl Region {
 }
 
 pub trait Renderable {
-    fn render_region(&mut self, rows: &mut [u16], region: Region);
+    fn render_region(&mut self, rows: &mut [u16], region: Option<&Region>);
     fn render(&mut self, matrix: &mut Matrix) {
-        let region = Region {
-            lower: 0,
-            upper:matrix.rows.len(),
-        };
-        self.render_region(&mut matrix.rows, region);
+        self.render_region(&mut matrix.rows,Option::None);
     }
     fn get_structure(&self)->Structure;
 }

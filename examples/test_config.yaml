@@ -1,0 +1,12 @@
+modules:
+  - name: cpu
+    region: { start: 0, end: 10}
+    config:
+      simple: false
+      reduce: 1
+
+  - name: random
+    region: { start: 10, end: 32 }
+    config:
+      seed: 42
+step: 2

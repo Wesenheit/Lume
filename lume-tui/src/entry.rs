@@ -21,6 +21,9 @@ pub enum Commands {
     Random {
         #[arg(short, long)]
         size: usize,
+        
+        #[arg(short, long,default_value = "2")]
+        step: usize,
     },
     Cpu {
         #[arg(long)]
@@ -31,5 +34,10 @@ pub enum Commands {
         
         #[arg(short, long,default_value = "2")]
         step: usize,
+    },
+    Combined {
+        
+        #[arg(short, long)]
+        path: String,
     }
 }
