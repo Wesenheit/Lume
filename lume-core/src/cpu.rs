@@ -1,7 +1,7 @@
 use sysinfo::{System, RefreshKind, CpuRefreshKind};
 use itertools::Itertools;
 
-use crate::core::{Matrix,Renderable,Structure};
+use crate::core::{Renderable,Structure,Region};
 enum CpuVisType {
     Simple,
     Random,
@@ -68,13 +68,13 @@ impl Cpu {
 }
 
 impl Renderable for Cpu {
-    fn render(&mut self, matrix: &mut Matrix) {
+    fn render_region(&mut self, matrix: &mut[u16],region:Region) {
         self.sys.refresh_cpu_all();
-        for (i, chunk) in self.sys.cpus().iter().chunks(self.reduce).into_iter().enumerate() {
+        for (i, chunk) in region.iter().zip(self.sys.cpus().iter().chunks(self.reduce).into_iter()) {
             let (sum, num) = chunk.fold((0.0f32, 0usize), |(s, c), cpu| {
                 (s + cpu.cpu_usage(), c + 1)
             });
-            matrix.rows[i] = self.get_row(matrix.rows[i],i, sum/num as f32)
+            matrix[i] = self.get_row(matrix[i],i, sum/num as f32)
         }
     }
     fn get_structure(&self)->Structure {

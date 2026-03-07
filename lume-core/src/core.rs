@@ -17,8 +17,26 @@ pub struct Matrix {
     pub rows_u8: Vec<u8>,
 }
 
+pub struct Region{
+    pub lower:usize,
+    pub upper:usize,
+}
+
+impl Region {
+    pub fn iter(&self) -> impl Iterator<Item = usize> + '_ {
+        self.lower..self.upper
+    }
+}
+
 pub trait Renderable {
-    fn render(&mut self, matrix: &mut Matrix);
+    fn render_region(&mut self, rows: &mut [u16], region: Region);
+    fn render(&mut self, matrix: &mut Matrix) {
+        let region = Region {
+            lower: 0,
+            upper:matrix.rows.len(),
+        };
+        self.render_region(&mut matrix.rows, region);
+    }
     fn get_structure(&self)->Structure;
 }
 

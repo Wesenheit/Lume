@@ -1,4 +1,4 @@
-use crate::core::{Renderable,Structure};
+use crate::core::{Renderable,Structure,Region};
 
 
 pub struct CM5;
@@ -8,8 +8,8 @@ fn cmp5_org(x: u16) -> u16 {
 }
 
 impl Renderable for CM5 {
-    fn render(&mut self, matrix: &mut crate::core::Matrix) {
-        for (i,row) in matrix.rows.iter_mut().enumerate(){
+    fn render_region(&mut self, matrix: &mut [u16],region:Region) {
+        for (i,row) in region.iter().zip(matrix.iter_mut()){
             let new = cmp5_org(*row);
             if (i & 4) != 0 {
                 *row = (*row << 1) | new;
