@@ -1,9 +1,9 @@
-use sysinfo::{System, RefreshKind, CpuRefreshKind};
 use itertools::Itertools;
-use serde_yaml;
 use serde::Deserialize;
+use serde_yaml;
+use sysinfo::{CpuRefreshKind, RefreshKind, System};
 
-use crate::core::{Renderable,Structure,Region};
+use crate::core::{Region, Renderable, Structure};
 use crate::utils::usage_to_u16_simple;
 enum CpuVisType {
     Simple,
@@ -16,28 +16,22 @@ struct CpuConfig {
     reduce: usize,
 }
 
-pub struct Cpu{
+pub struct Cpu {
     vis: CpuVisType,
     sys: System,
     reduce: usize,
-    step:usize,
+    step: usize,
 }
 
 impl Cpu {
-    pub fn get_row(&self,row:u16,i:usize,cpu_usage:f32) -> u16{
-        match self.vis {        
-            CpuVisType::Simple => {
-                usage_to_u16_simple(cpu_usage)
-            },
+    pub fn get_row(&self, row: u16, i: usize, cpu_usage: f32) -> u16 {
+        match self.vis {
+            CpuVisType::Simple => usage_to_u16_simple(cpu_usage),
             CpuVisType::Random => {
                 let usage = usage_to_u16_simple(cpu_usage);
                 let diff = usage.count_ones() as i32 - row.count_ones() as i32;
 
-                let new_bit = if diff > 0 {
-                    1
-                } else {
-                    0
-                };
+                let new_bit = if diff > 0 { 1 } else { 0 };
                 if (i & self.step) != 0 {
                     (row << 1) | new_bit
                 } else {
@@ -46,20 +40,24 @@ impl Cpu {
             }
         }
     }
-    pub fn new(simple: bool,reduce:usize,step:usize) -> Cpu {
-        let sys =System::new_with_specifics(
+    pub fn new(simple: bool, reduce: usize, step: usize) -> Cpu {
+        let sys = System::new_with_specifics(
             RefreshKind::nothing().with_cpu(CpuRefreshKind::everything()),
         );
         let typecpu = if simple {
-            CpuVisType::Simple 
+            CpuVisType::Simple
         } else {
             CpuVisType::Random
         };
-        return Cpu { vis: typecpu, sys:sys ,reduce:reduce ,step:step}
+        return Cpu {
+            vis: typecpu,
+            sys: sys,
+            reduce: reduce,
+            step: step,
+        };
     }
-    pub fn from_config(value: serde_yaml::Value,slide:usize) -> Self {
-        let config: CpuConfig = serde_yaml::from_value(value)
-            .expect("invalid cpu config");
+    pub fn from_config(value: serde_yaml::Value, slide: usize) -> Self {
+        let config: CpuConfig = serde_yaml::from_value(value).expect("invalid cpu config");
         Self::new(config.simple, config.reduce, slide)
     }
     pub fn count(&self) -> usize {
@@ -68,24 +66,24 @@ impl Cpu {
 }
 
 impl Renderable for Cpu {
-    fn render_region(&mut self, matrix: &mut[u16],region:Option<&Region>) {
-        let (lower,upper) = match region{
-            Option::Some(region) => (region.lower,region.upper),
-            Option::None => (0,matrix.len())
+    fn render_region(&mut self, matrix: &mut [u16], region: Option<&Region>) {
+        let (lower, upper) = match region {
+            Option::Some(region) => (region.lower, region.upper),
+            Option::None => (0, matrix.len()),
         };
-        
+
         self.sys.refresh_cpu_all();
-        for (i, chunk) in (lower..upper).zip(self.sys.cpus().iter().chunks(self.reduce).into_iter()) {
-            let (sum, num) = chunk.fold((0.0f32, 0usize), |(s, c), cpu| {
-                (s + cpu.cpu_usage(), c + 1)
-            });
-            matrix[i] = self.get_row(matrix[i],i, sum/num as f32)
+        for (i, chunk) in (lower..upper).zip(self.sys.cpus().iter().chunks(self.reduce).into_iter())
+        {
+            let (sum, num) =
+                chunk.fold((0.0f32, 0usize), |(s, c), cpu| (s + cpu.cpu_usage(), c + 1));
+            matrix[i] = self.get_row(matrix[i], i, sum / num as f32)
         }
     }
-    fn get_structure(&self)->Structure {
+    fn get_structure(&self) -> Structure {
         match self.vis {
             CpuVisType::Simple => Structure::Static,
-            CpuVisType::Random => Structure::Sliding(self.step)
+            CpuVisType::Random => Structure::Sliding(self.step),
         }
     }
 }

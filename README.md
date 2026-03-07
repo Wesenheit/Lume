@@ -52,7 +52,11 @@ step: 2
 This will display in first 8 columns cpu utilization. Keep in mind to scale everything to display in 8 columns!
 In this example machine is 32 core, after reducing by a factor of 4 we get only 8 cores as requested.
 Last two columns will be dedicated to Nvidia gpu monitoring (only one device, utilization and memory separatelly).
+To run the config one can use
 
+```
+cargo run combined --path path/to/file.yaml
+```
 
 
 ## Roadmap

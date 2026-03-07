@@ -3,14 +3,14 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "Lume")]
 pub struct Cli {
-    #[arg(short, long,default_value = "100")]
+    #[arg(short, long, default_value = "100")]
     pub ms: u64,
 
     #[arg(short, long)]
     pub light: bool,
 
-    #[arg(short,long)]
-    pub reduce_u8:bool,
+    #[arg(short, long)]
+    pub reduce_u8: bool,
 
     #[command(subcommand)]
     pub command: Commands,
@@ -21,23 +21,22 @@ pub enum Commands {
     Random {
         #[arg(short, long)]
         size: usize,
-        
-        #[arg(short, long,default_value = "2")]
+
+        #[arg(short, long, default_value = "2")]
         step: usize,
     },
     Cpu {
         #[arg(long)]
         simple: bool,
 
-        #[arg(short, long,default_value = "1")]
+        #[arg(short, long, default_value = "1")]
         reduce: usize,
-        
-        #[arg(short, long,default_value = "2")]
+
+        #[arg(short, long, default_value = "2")]
         step: usize,
     },
     Combined {
-        
         #[arg(short, long)]
         path: String,
-    }
+    },
 }

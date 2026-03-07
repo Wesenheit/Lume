@@ -1,8 +1,7 @@
-use crate::core::{Renderable,Structure,Region};
+use crate::core::{Region, Renderable, Structure};
 
-
-pub struct CM5{
-    pub sliding:usize,
+pub struct CM5 {
+    pub sliding: usize,
 }
 
 fn cmp5_org(x: u16) -> u16 {
@@ -10,12 +9,12 @@ fn cmp5_org(x: u16) -> u16 {
 }
 
 impl Renderable for CM5 {
-    fn render_region(&mut self, matrix: &mut [u16],region:Option<&Region>) {
-        let (lower,upper) = match region{
-            Option::Some(region) => (region.lower,region.upper),
-            Option::None => (0,matrix.len())
+    fn render_region(&mut self, matrix: &mut [u16], region: Option<&Region>) {
+        let (lower, upper) = match region {
+            Option::Some(region) => (region.lower, region.upper),
+            Option::None => (0, matrix.len()),
         };
-        for (i,row) in (lower..upper).zip(matrix.iter_mut()){
+        for (i, row) in (lower..upper).zip(matrix.iter_mut()) {
             let new = cmp5_org(*row);
             if (i & self.sliding) != 0 {
                 *row = (*row << 1) | new;
@@ -24,7 +23,7 @@ impl Renderable for CM5 {
             }
         }
     }
-    fn get_structure(&self)->Structure {
+    fn get_structure(&self) -> Structure {
         Structure::Sliding(4)
     }
 }
