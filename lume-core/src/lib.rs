@@ -3,3 +3,4 @@ pub mod random;
 pub mod cpu;
 pub mod utils;
 pub mod combined;
+pub mod nvidia;
