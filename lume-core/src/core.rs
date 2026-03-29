@@ -45,11 +45,11 @@ impl Matrix {
         } else {
             Vec::new()
         };
-        return Self {
+        Self {
             rows: base,
             reduce: config.reduce,
             rows_u8: reduced_version,
-        };
+        }
     }
 
     pub fn zero(config: MatrixConfig) -> Self {
@@ -58,7 +58,7 @@ impl Matrix {
         if matrix.reduce {
             matrix.rows_u8.fill(0);
         }
-        return matrix;
+        matrix
     }
 
     pub fn random(config: MatrixConfig) -> Self {
@@ -66,7 +66,7 @@ impl Matrix {
 
         let mut matrix = Matrix::allocate(config);
         rng.fill(&mut matrix.rows[..]);
-        return matrix;
+        matrix
     }
 
     pub fn update(&mut self, pattern: &mut dyn Renderable) {

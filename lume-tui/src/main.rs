@@ -31,7 +31,7 @@ fn main() -> io::Result<()> {
             let pattern = Box::new(Cpu::new(*simple, *reduce, *step));
             let size = pattern.count();
             let config = MatrixConfig {
-                size: size,
+                size,
                 reduce: cli.reduce_u8,
             };
             let matrix = Matrix::zero(config);
@@ -41,7 +41,7 @@ fn main() -> io::Result<()> {
             let pattern = Box::new(CombinedPattern::from_yaml(path));
             let size = pattern.get_size();
             let config = MatrixConfig {
-                size: size,
+                size,
                 reduce: cli.reduce_u8,
             };
             let matrix = Matrix::random(config);

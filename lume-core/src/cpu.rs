@@ -49,19 +49,20 @@ impl Cpu {
         } else {
             CpuVisType::Random
         };
-        return Cpu {
+        Cpu {
             vis: typecpu,
-            sys: sys,
-            reduce: reduce,
-            step: step,
-        };
+            sys,
+            reduce,
+            step,
+        }
     }
     pub fn from_config(value: serde_yaml::Value, slide: usize) -> Self {
         let config: CpuConfig = serde_yaml::from_value(value).expect("invalid cpu config");
         Self::new(config.simple, config.reduce, slide)
     }
     pub fn count(&self) -> usize {
-        return (self.sys.cpus().len() + self.reduce - 1) / self.reduce;
+        self.sys.cpus().len().div_ceil(self.reduce)
+        //(self.sys.cpus().len() + self.reduce - 1) / self.reduce
     }
 }
 

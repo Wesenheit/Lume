@@ -16,7 +16,7 @@ pub fn take_even(val: u16) -> u8 {
     x as u8
 }
 pub fn usage_to_u16_simple(usage: f32) -> u16 {
-    let clamped_usage = usage.min(100.0).max(0.0);
+    let clamped_usage = usage.clamp(0., 100.);
 
     let num_bits = (clamped_usage / 100.0 * 16.0).round() as u32;
 

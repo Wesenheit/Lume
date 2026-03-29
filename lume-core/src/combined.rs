@@ -35,7 +35,7 @@ impl Renderable for CombinedPattern {
         panic!("Combined Pattern cannot be called with render_region!")
     }
     fn get_structure(&self) -> Structure {
-        return Structure::Sliding(self.sliding);
+        Structure::Sliding(self.sliding)
     }
     fn render(&mut self, matrix: &mut Matrix) {
         for (pattern, region) in self.patterns.iter_mut().zip(self.ranges.iter()) {
@@ -84,14 +84,14 @@ impl CombinedPattern {
             Option::Some(value) => assert!(value == 0),
             Option::None => panic!("No ranges specified"),
         }
-        return Self {
+        Self {
             patterns,
             ranges,
             sliding: config.step,
             size: max.expect("no ranges specified!"),
-        };
+        }
     }
     pub fn get_size(&self) -> usize {
-        return self.size;
+        self.size
     }
 }
